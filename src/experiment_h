@@ -1,0 +1,55 @@
+/*
+ * Task #3
+ *
+ * Azim Muradov, group #171
+ */
+
+#ifndef TASK_3_EXPERIMENT_H
+#define TASK_3_EXPERIMENT_H
+
+#include <math.h>
+
+#define define_vector_2d(T) typedef struct vector_2d_##T { \
+    T x;                                                   \
+    T y;                                                   \
+} vector_2d_##T##_t
+
+#define declare_dist(T) T dist_##T(vector_2d_##T##_t v, vector_2d_##T##_t u)
+
+#define define_experiment_data_unit(T) typedef struct experiment_data_unit_##T { \
+    T d;                                                                         \
+    T x;                                                                         \
+    T y;                                                                         \
+    T dist;                                                                      \
+} experiment_data_unit_##T##_t
+
+
+#define declare_run_experiment_1(T) int run_experiment_##T##_1(experiment_data_unit_##T##_t *experiment_data)
+
+
+#define define_matrix_2d(T) typedef struct matrix_2d_##T {  \
+    vector_2d_##T##_t col1;                                 \
+    vector_2d_##T##_t col2;                                 \
+} matrix_2d_##T##_t
+
+#define declare_get_matrix_determinant(T) T get_matrix_determinant_##T(matrix_2d_##T##_t matrix)
+
+#define declare_run_experiment_2(T) int run_experiment_##T##_2(experiment_data_unit_##T##_t *experiment_data)
+
+
+// SHORTCUT
+#define decl_shortcut(T)               \
+    define_vector_2d(T);               \
+    declare_dist(T);                   \
+    define_experiment_data_unit(T);    \
+    declare_run_experiment_1(T);       \
+    define_matrix_2d(T);               \
+    declare_get_matrix_determinant(T); \
+    declare_run_experiment_2(T);
+
+// EXPAND MACROS
+decl_shortcut(float)
+
+decl_shortcut(double)
+
+#endif // TASK_3_EXPERIMENT_H

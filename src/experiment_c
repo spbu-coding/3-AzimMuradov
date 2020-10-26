@@ -1,0 +1,100 @@
+/*
+ * Task #3
+ *
+ * Azim Muradov, group #171
+ */
+
+#include "experiment_h"
+
+#define define_dist(T, T_SUF) declare_dist(T) { return hypot##T_SUF(v.x - u.x, v.y - u.y); }
+
+#define define_run_experiment_1(T, T_SUF) declare_run_experiment_1(T) {                   \
+    static const T BASIC_DIF = 0.0001##T_SUF;                                             \
+    static const T DIF_0 = 0.0001##T_SUF;                                                 \
+    static const T REDUCTION = 2.0##T_SUF;                                                \
+    static const T MAX_DISTANCE = 10e-6##T_SUF;                                           \
+                                                                                          \
+    static const vector_2d_##T##_t V0 = {1.0##T_SUF, 1.0##T_SUF};                         \
+                                                                                          \
+    T distance;                                                                           \
+    T _distance = 0.0##T_SUF;                                                             \
+    T d = DIF_0;                                                                          \
+                                                                                          \
+    int counter = 0;                                                                      \
+                                                                                          \
+    T x, y;                                                                               \
+                                                                                          \
+    do {                                                                                  \
+        x = (BASIC_DIF - d) / BASIC_DIF;                                                  \
+        y = (BASIC_DIF + d) / BASIC_DIF;                                                  \
+                                                                                          \
+        distance = dist_##T(V0, (vector_2d_##T##_t) {x, y});                              \
+        if (distance == _distance) return -1; else _distance = distance;                  \
+                                                                                          \
+        experiment_data[counter++] = (experiment_data_unit_##T##_t) {d, x, y, distance};  \
+                                                                                          \
+        d /= REDUCTION;                                                                   \
+    } while (distance > MAX_DISTANCE);                                                    \
+                                                                                          \
+    return counter;                                                                       \
+}
+
+#define define_get_matrix_determinant(T) declare_get_matrix_determinant(T) { \
+    return matrix.col1.x * matrix.col2.y - matrix.col1.y * matrix.col2.x;    \
+}
+
+#define define_run_experiment_2(T, T_SUF) declare_run_experiment_2(T) {                   \
+    static const T S_1 = 2.0##T_SUF;                                                      \
+    static const T S_2 = 2.0001##T_SUF;                                                   \
+    static const T DIF_0 = 0.0001##T_SUF;                                                 \
+    static const T REDUCTION = 2.0##T_SUF;                                                \
+    static const T MAX_DISTANCE = 10e-6##T_SUF;                                           \
+                                                                                          \
+    static const vector_2d_##T##_t V0 = {1.0##T_SUF, 1.0##T_SUF};                         \
+                                                                                          \
+    static const vector_2d_##T##_t A_COL = {1.0##T_SUF, 1.0##T_SUF};                      \
+    static const vector_2d_##T##_t B_COL = {1.0##T_SUF, 1.0001##T_SUF};                   \
+                                                                                          \
+    T distance;                                                                           \
+    T _distance = 0.0##T_SUF;                                                             \
+    T d = DIF_0;                                                                          \
+                                                                                          \
+    int counter = 0;                                                                      \
+                                                                                          \
+    T x, y;                                                                               \
+                                                                                          \
+    vector_2d_##T##_t s_col;                                                              \
+    T det_x, det_y, det;                                                                  \
+                                                                                          \
+    do {                                                                                  \
+        s_col = (vector_2d_##T##_t) {S_1, S_2 + d};                                       \
+        det_x = get_matrix_determinant_##T((matrix_2d_##T##_t) {s_col, B_COL});           \
+        det_y = get_matrix_determinant_##T((matrix_2d_##T##_t) {A_COL, s_col});           \
+        det   = get_matrix_determinant_##T((matrix_2d_##T##_t) {A_COL, B_COL});           \
+                                                                                          \
+        x = det_x / det;                                                                  \
+        y = det_y / det;                                                                  \
+                                                                                          \
+        distance = dist_##T(V0, (vector_2d_##T##_t) {x, y});                              \
+        if (distance == _distance) return -1; else _distance = distance;                  \
+                                                                                          \
+        experiment_data[counter++] = (experiment_data_unit_##T##_t) {d, x, y, distance};  \
+                                                                                          \
+        d /= REDUCTION;                                                                   \
+    } while (distance > MAX_DISTANCE);                                                    \
+                                                                                          \
+    return counter;                                                                       \
+}
+
+
+// SHORTCUT
+#define def_shortcut(T, T_SUF)        \
+    define_dist(T, T_SUF)             \
+    define_run_experiment_1(T, T_SUF) \
+    define_get_matrix_determinant(T)  \
+    define_run_experiment_2(T, T_SUF)
+
+// EXPAND MACROS
+def_shortcut(float, f)
+
+def_shortcut(double,)
